@@ -51,7 +51,7 @@ turm completion fish | source
 
 ## How it works
 
-`turm` obtains information about jobs by parsing the output of `squeue`. It can do this either locally or on a remote machine via SSH (see `--remote` and `--ssh-options`).
+`turm` obtains information about jobs by parsing the output of `squeue`. This can be done either locally or on a remote machine via SSH (see `--remote` and `--ssh-options`).
 The reason for this is that `squeue` is available on all Slurm clusters, and running it periodically is not too expensive for the Slurm controller ( particularly when [filtering by user](https://slurm.schedmd.com/squeue.html#OPT_user)).
 In contrast, Slurm's C API is unstable, and Slurm's REST API is not always available and can be costly for the Slurm controller.
 Another advantage is that we get free support for the exact same CLI flags as `squeue`, which users are already familiar with, for filtering and sorting the jobs.
