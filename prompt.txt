@@ -1,9 +1,0 @@
-This is turm. A rust terminal UI similar to lazydocker for managing slurm.
-It calls slurm commands under the hood. Currently, an issue is that it can only be done
-on slurm nodes that have it installed. We will add an option to run all slurm commands against
-a remote node through ssh. We can do this by prefixing the slurm commands with
-the ssh expression, but theres one and possible more caveats:
-directories are not remembered between each run, so we must either cd on each command or use abspaths if we use paths.
-Envvars must be handled appropriately to determine if they are evaluated on the client side or the server side, if any envvars are used.
-
-You will - modify the code to add this feature in a good, idiomatic way and provide documentation / instructions to configure a remote ssh cluster.
