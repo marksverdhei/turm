@@ -76,7 +76,7 @@ When using the remote SSH feature, `turm` will execute all Slurm commands on the
 
 **Note:** When using the remote SSH feature, it is recommended to set up SSH key-based authentication to avoid having to enter your password every time a command is executed.
 
-### Ressource usage
+### Resource usage
 
 TL;DR: `turm` ≈ `watch -n2 squeue` + `tail -f slurm-log.out`
 
