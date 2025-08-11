@@ -377,63 +377,58 @@ impl App {
             .map(|j| j.state_compact.len())
             .max()
             .unwrap_or(0);
-        let job_list = if let Some(err) = &self.error {
-            List::new(vec![ListItem::new(Text::from(err.as_str()))])
-                .block(Block::default().title("Error").borders(Borders::ALL))
-        } else {
-            let jobs: Vec<ListItem> = self
-            .jobs
-            .iter()
-            .map(|j| {
-                ListItem::new(Line::from(vec![
-                    Span::styled(
-                        format!(
-                            "{:<max$.max$}",
-                            j.state_compact,
-                            max = max_state_compact_len
-                        ),
-                        Style::default(),
+        let jobs: Vec<ListItem> = self
+        .jobs
+        .iter()
+        .map(|j| {
+            ListItem::new(Line::from(vec![
+                Span::styled(
+                    format!(
+                        "{:<max$.max$}",
+                        j.state_compact,
+                        max = max_state_compact_len
                     ),
-                    Span::raw(" "),
-                    Span::styled(
-                        format!("{:<max$.max$}", j.id(), max = max_id_len),
-                        Style::default().fg(Color::Yellow),
-                    ),
-                    Span::raw(" "),
-                    Span::styled(
-                        format!("{:<max$.max$}", j.partition, max = max_partition_len),
-                        Style::default().fg(Color::Blue),
-                    ),
-                    Span::raw(" "),
-                    Span::styled(
-                        format!("{:<max$.max$}", j.user, max = max_user_len),
-                        Style::default().fg(Color::Green),
-                    ),
-                    Span::raw(" "),
-                    Span::styled(
-                        format!("{:>max$.max$}", j.time, max = max_time_len),
-                        Style::default().fg(Color::Red),
-                    ),
-                    Span::raw(" "),
-                    Span::raw(&j.name),
-                ]))
-            })
-            .collect();
-            List::new(jobs)
-            .block(
-                Block::default()
-                    .title(format!("Jobs ({})", self.jobs.len()))
-                    .borders(Borders::ALL)
-                    .border_style(if self.dialog.is_some() {
-                        Style::default()
-                    } else {
-                        match self.focus {
-                            Focus::Jobs => Style::default().fg(Color::Green),
-                        }
-                    }),
-            )
-            .highlight_style(Style::default().bg(Color::Green).fg(Color::Black))
-        };
+                    Style::default(),
+                ),
+                Span::raw(" "),
+                Span::styled(
+                    format!("{:<max$.max$}", j.id(), max = max_id_len),
+                    Style::default().fg(Color::Yellow),
+                ),
+                Span::raw(" "),
+                Span::styled(
+                    format!("{:<max$.max$}", j.partition, max = max_partition_len),
+                    Style::default().fg(Color::Blue),
+                ),
+                Span::raw(" "),
+                Span::styled(
+                    format!("{:<max$.max$}", j.user, max = max_user_len),
+                    Style::default().fg(Color::Green),
+                ),
+                Span::raw(" "),
+                Span::styled(
+                    format!("{:>max$.max$}", j.time, max = max_time_len),
+                    Style::default().fg(Color::Red),
+                ),
+                Span::raw(" "),
+                Span::raw(&j.name),
+            ]))
+        })
+        .collect();
+        let job_list = List::new(jobs)
+        .block(
+            Block::default()
+                .title(format!("Jobs ({})", self.jobs.len()))
+                .borders(Borders::ALL)
+                .border_style(if self.dialog.is_some() {
+                    Style::default()
+                } else {
+                    match self.focus {
+                        Focus::Jobs => Style::default().fg(Color::Green),
+                    }
+                }),
+        )
+        .highlight_style(Style::default().bg(Color::Green).fg(Color::Black));
         f.render_stateful_widget(job_list, master_detail[0], &mut self.job_list_state);
 
         // Job details
@@ -528,18 +523,24 @@ impl App {
         //     "".to_string()
         // });
 
-        let log = match self.job_output.as_deref() {
-            Ok(s) => Paragraph::new(fit_text(
-                s,
-                log_block.inner(log_area).height as usize,
-                log_block.inner(log_area).width as usize,
-                self.job_output_anchor,
-                self.job_output_offset as usize,
-                self.job_output_wrap,
-            )),
-            Err(e) => Paragraph::new(e.to_string())
+        let log = if let Some(err) = &self.error {
+            Paragraph::new(err.as_str())
                 .style(Style::default().fg(Color::Red))
-                .wrap(Wrap { trim: true }),
+                .wrap(Wrap { trim: true })
+        } else {
+            match self.job_output.as_deref() {
+                Ok(s) => Paragraph::new(fit_text(
+                    s,
+                    log_block.inner(log_area).height as usize,
+                    log_block.inner(log_area).width as usize,
+                    self.job_output_anchor,
+                    self.job_output_offset as usize,
+                    self.job_output_wrap,
+                )),
+                Err(e) => Paragraph::new(e.to_string())
+                    .style(Style::default().fg(Color::Red))
+                    .wrap(Wrap { trim: true }),
+            }
         }
         .block(log_block);
 

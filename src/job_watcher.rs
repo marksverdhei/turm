@@ -85,6 +85,12 @@ impl JobWatcher {
                 cmd
             };
 
+            let command_string = if let Some(remote) = &self.remote {
+                format!("ssh {} squeue {} --array --noheader --Format {}", remote, self.squeue_args.join(" "), output_format)
+            } else {
+                format!("squeue {} --array --noheader --Format {}", self.squeue_args.join(" "), output_format)
+            };
+
             let output = command.output();
 
             match output {
@@ -172,7 +178,7 @@ impl JobWatcher {
                 }
                 Err(err) => {
                     self.app
-                        .send(AppMessage::Error(err.to_string()))
+                        .send(AppMessage::Error(format!("Failed to run command '{}': {}", command_string, err)))
                         .unwrap();
                 }
             }
